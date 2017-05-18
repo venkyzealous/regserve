@@ -1,0 +1,472 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"fu",
+				"function"
+			],
+			[
+				"servicd",
+				"serviceLoadComplete"
+			],
+			[
+				"servic",
+				"ServiceEnumerator"
+			],
+			[
+				"event",
+				"eventEmitter"
+			],
+			[
+				"Service",
+				"ServiceEnumerator"
+			],
+			[
+				"loca",
+				"locateService"
+			],
+			[
+				"init",
+				"initProcessingService"
+			],
+			[
+				"initi",
+				"initValidationService"
+			],
+			[
+				"Locate",
+				"LocateAsync"
+			],
+			[
+				"service",
+				"serviceLocator"
+			],
+			[
+				"servicelo",
+				"serviceLocatorURL"
+			],
+			[
+				"ser",
+				"serviceLocatorURL"
+			],
+			[
+				"get",
+				"getServiceLocatorAsync"
+			],
+			[
+				"req",
+				"require"
+			],
+			[
+				"reg",
+				"regServiceLocator"
+			],
+			[
+				"create",
+				"createReadStream"
+			],
+			[
+				"copy",
+				"copybuffer"
+			]
+		]
+	},
+	"buffers":
+	[
+		{
+			"contents": "var express = require(\"express\");\nvar yamljs = require(\"yamljs\");\nvar request = require('request');\nvar events = require(\"events\");\n\nvar validationService = null;\nvar processingService = null;\nvar eventEmitter = new events.EventEmitter();\n\nvar services = {\n\t\"regvalidationservice\":null,\n\t\"regprocessingservice\":null\n}\n\nfunction ServiceEnumerator(){\n\tnextService = function(name){\n\t\tif(isLastService(name)){\n\t\t\treturn services[index + 1];\n\t\t}\n\t\telse\n\t\t\treturn null;\n\t},\n\tgetServiceIndex = function(name){\n\t\tvar names = Object.keys(services);\n\t\treturn names.indexOf(name);\n\t},\n\tisLastService = function(index){\n\t\tvar index = getServiceIndex(name);\n\t\treturn ((index + 1) < names.length);\n\t},\n\tfirstService = function(){\n\t\treturn Object.keys(services)[0];\n\t}\n}\n\nfunction ServiceLocator(url)\n{\n\tthis.url = url;\n\tthis.LocateAsync =  function(serviceName, callback){\n\t\trequest(this.url+'/service/'+ serviceName + '/url',function(error,response,body){\n\t\t\tif(error == null){\n\t\t\t\tvar result = JSON.parse(body);\n\t\t\t\tservices[serviceName] = new Service(result.url);\n\t\t\t\tcallback(result.url);\n\t\t\t}\n\t\t\telse{\n\t\t\t\tconsole.log(\"Locating \"+ serviceName + \" Failed\");\n\t\t\t\tconsole.error(error);\n\t\t\t}\n\t\t});\n\t}\n}\n\nfunction Service(url)\n{\n\tthis.url = url,\n\tthis.serve = function(path,inputData,callback){\n\t\trequest({\n\t\t\turl: this.url+path,\n\t\t\tjson:true,\n\t\t\tmethod: 'POST',\n\t\t\tmultipart: {\n\t\t\t\tchunked:false,\n\t\t\t\tdata:[\n\t\t\t\t\t{\n\t\t\t\t\t\t'content-type': 'application/json',\n\t\t\t\t\t\tbody:inputData\n\t\t\t\t\t}\n\t\t\t\t]\n\t\t\t}\n\t\t},function(error,response,body){\n\t\t\tif(error == null){\n\t\t\t\tvar result = JSON.parse(body);\n\t\t\t\tcallback(result.url,inputData);\n\t\t\t}\n\t\t\telse{\n\t\t\t\tconsole.log(\"Service \"+ serviceName + \" Failed\");\n\t\t\t\tconsole.error(error);\n\t\t\t}\n\t\t});\n\t}\n\n}\n\nfunction initializeEngine(serviceLocatorURL){\n\tvar firstService = (new ServiceEnumerator()).firstService();\n\tinitializeService(firstService);\n}\n\neventEmitter.on('serviceLoaded',function(serviceName){\n\tvar serviceEnumerator = new ServiceEnumerator(serviceName);\n\tvar next = serviceEnumerator.nextService();\n\tif(next != null)\n\t\tinitializeService(next);\n\telse\n\t\teventEmitter.emit('serviceLoadComplete');\n})\n\nfunction initializeService(serviceName){\n\tlocator.LocateAsync(serviceName,function(url){\n\t\tservices[serviceName] = new Service(url);\n\t\teventEmitter.emit('serviceLoaded',serviceName);\n\t});\n}\n\neventEmitter.on('serviceLoadComplete',function(){\n\tstartEngine();\n})\n\n\nfunction startEngine(){\n\n\tapp.get(\"/regserve\",function(req,res){\n\t\tres.send(\"Welcome to Regserve\");\n\t});\n\n\tapp.post(\"/regserve\",function(req,res){\n\n\t\tvalidateData(req.body.Data, function(result){\n\t\t\tres.send(JSON.stringify(message));\n\t\t});\n\n\t});\n\n\tvar server = app.listen(8081,function(){\n\t\tvar host = server.address().address;\n\t\tvar port = server.address().port;\t\n\n\t\tconsole.log(\"listening at http://%s:%s/\",host,port);\n\t});\n}\n\nfunction validateData(inputData,callback){\n\tservices[\"regvalidationservice\"].serve('/validate',inputData,processData);\n}\n\nfunction processData(result,inputData){\n\tif(!result.isValid){\n\t\tvar message = {};\n\t\tmessage.isError = 1;\n\t\tmessage.ErrorMessage = \"Input Data Invalid.\"\n\t\tmessage.ErrorDetails = result.details;\n\t\tconsole.log(\"Input Data Invalid: %s\",result.details);\n\t\tcallback(message);\n\t}\n\telse{\n\t\tservices[\"regprocessingservice\"].serve('/process',inputData,function(result,inputData){\n\t\tvar message = {};\n\t\tmessage.isError = 0;\n\t\tmessage.result = result;\n\t\tconsole.log(\"Successfully processed\");\n\t\tcallback(message);\n\t\t});\n\t}\n}\n\nvar app = express();\nvar config_contents = fs.read(\"config.yaml\");\nvar config = yamljs.parse(config_contents);\nvar serviceLocatorURL = config[\"regservicelocator_url\"];\n \ninitializeEngine(serviceLocatorURL);\n",
+			"file": "index.js",
+			"file_size": 3825,
+			"file_write_time": 131396001684242430,
+			"settings":
+			{
+				"buffer_size": 3663,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"contents": "\"regservicelocator_url\":\"localhost:8081/regservicelocator\"\n",
+			"file": "config.yaml",
+			"file_size": 60,
+			"file_write_time": 131395815827561389,
+			"settings":
+			{
+				"buffer_size": 59,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "regservicelocator/regservicelocator.js",
+			"settings":
+			{
+				"buffer_size": 326,
+				"encoding": "UTF-8",
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"contents": "{\n  \"name\": \"regserve\",\n  \"version\": \"1.0.0\",\n  \"description\": \"A service that takes input data, performs regression analysis and returns fitting line function equation\",\n  \"main\": \"index.js\",\n  \"scripts\": {\n    \"test\": \"index.js\"\n  },\n  \"repository\": {\n    \"type\": \"git\",\n    \"url\": \"git+https://github.com/venkyzealous/regserve.git\"\n  },\n  \"keywords\": [\n    \"regserve\"\n  ],\n  \"author\": \"Venkatesh Jagannathan\",\n  \"license\": \"MIT\",\n  \"bugs\": {\n    \"url\": \"https://github.com/venkyzealous/regserve/issues\"\n  },\n  \"homepage\": \"https://github.com/venkyzealous/regserve#readme\",\n  \"dependencies\": {\n    \"body-parser\": \"^1.17.2\",\n    \"cookie-parser\": \"^1.4.3\",\n    \"express\": \"^4.15.3\",\n    \"multer\": \"^1.3.0\",\n    \"regression\": \"^1.4.0\",\n    \"yamljs\": \"^0.2.10\"\n  }\n}\n",
+			"file": "package.json",
+			"file_size": 765,
+			"file_write_time": 131395741125648296,
+			"settings":
+			{
+				"buffer_size": 765,
+				"line_ending": "Unix"
+			}
+		}
+	],
+	"build_system": "Packages/Python/Python.sublime-build",
+	"build_system_choices":
+	[
+		[
+			[
+				[
+					"Packages/Python/Python.sublime-build",
+					""
+				],
+				[
+					"Packages/Python/Python.sublime-build",
+					"Syntax Check"
+				]
+			],
+			[
+				"Packages/Python/Python.sublime-build",
+				""
+			]
+		]
+	],
+	"build_varint": "",
+	"command_palette":
+	{
+		"height": 104.0,
+		"last_filter": "remove ",
+		"selected_items":
+		[
+			[
+				"remove ",
+				"Package Control: Remove Package"
+			],
+			[
+				"insta",
+				"Package Control: Install Package"
+			],
+			[
+				"remove",
+				"Package Control: Remove Package"
+			],
+			[
+				"glue",
+				"Glue - Launch"
+			],
+			[
+				"install",
+				"Package Control: Install Package"
+			],
+			[
+				"remo",
+				"Package Control: Remove Package"
+			],
+			[
+				"cw",
+				"Convert Case: Swap Case"
+			]
+		],
+		"width": 416.0
+	},
+	"console":
+	{
+		"height": 51.0,
+		"history":
+		[
+			"import urllib.request,os,hashlib; h = 'df21e130d211cfc94d9b0905775a7c0f' + '1e3d39e33b79698005270310898eea76'; pf = 'Package Control.sublime-package'; ipp = sublime.installed_packages_path(); urllib.request.install_opener( urllib.request.build_opener( urllib.request.ProxyHandler()) ); by = urllib.request.urlopen( 'http://packagecontrol.io/' + pf.replace(' ', '%20')).read(); dh = hashlib.sha256(by).hexdigest(); print('Error validating download (got %s instead of %s), please try manual install' % (dh, h)) if dh != h else open(os.path.join( ipp, pf), 'wb' ).write(by)"
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"expanded_folders":
+	[
+		"/D/projects/regservebackup"
+	],
+	"file_history":
+	[
+		"/D/projects/regserve/regservicelocator/config.yaml",
+		"/D/projects/regserve/regservicelocator/package.json",
+		"/D/projects/regserve/regservicelocator/regservicelocator.js",
+		"/D/projects/regserve/regservicelocator.js",
+		"/D/projects/regserve/regservicelocator",
+		"/C/Program Files/Sublime Text 3/slt.bat",
+		"/D/projects/nodetutorials/streams/write.js",
+		"/D/projects/nodetutorials/streams/pipe.js",
+		"/D/projects/nodetutorials/streams/chain.js",
+		"/D/projects/nodetutorials/globals/globals.js",
+		"/d/projects/pythontutorials/test.py",
+		"/C/Users/venky/AppData/Roaming/Sublime Text 3/Installed Packages/Glue.sublime-package",
+		"/C/Users/venky/AppData/Roaming/Sublime Text 3/Packages/User/cl.sublime-snippet",
+		"/D/projects/nodetutorials/streams/main.js",
+		"/D/projects/nodetutorials/streams/input.txt",
+		"/D/projects/nodetutorials/buffer/main.js",
+		"/C/Users/venky/AppData/Roaming/Sublime Text 3/Packages/User/cl.xml",
+		"/C/Users/venky/AppData/Roaming/Sublime Text 3/Packages/User/c.l.xml",
+		"/C/Users/venky/AppData/Roaming/Sublime Text 3/Packages/User/c.l",
+		"/d/projects/nodetutorials/events/main.js",
+		"/D/projects/nodetutorials/async/main.js",
+		"/D/projects/nodetutorials/2/input.txt",
+		"/D/projects/nodetutorials/2/main.js",
+		"/D/projects/nodetutorials/main.js",
+		"/d/projects/nodetutorials/node_modules/express/package.json",
+		"/D/projects/nodetutorials/input.txt",
+		"/D/projects/nodetutorials/hello.js"
+	],
+	"find":
+	{
+		"height": 21.0
+	},
+	"find_in_files":
+	{
+		"height": 0.0,
+		"where_history":
+		[
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+			"http",
+			"serve",
+			"data"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"selected": 0,
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"file": "index.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 3663,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1677,
+								1677
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 507.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "config.yaml",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 59,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1,
+								22
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/YAML/YAML.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "regservicelocator/regservicelocator.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 326,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								326,
+								326
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "package.json",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 765,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								339,
+								339
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JSON.sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 3,
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 21.0
+	},
+	"input":
+	{
+		"height": 252.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.exec":
+	{
+		"height": 231.0
+	},
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"pinned_build_system": "Packages/Python/Python.sublime-build",
+	"project": "regserve.sublime-project",
+	"replace":
+	{
+		"height": 38.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_symbol":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"selected_group": 0,
+	"settings":
+	{
+	},
+	"show_minimap": false,
+	"show_open_files": true,
+	"show_tabs": true,
+	"side_bar_visible": false,
+	"side_bar_width": 163.0,
+	"status_bar_visible": false,
+	"template_settings":
+	{
+	}
+}

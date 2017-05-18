@@ -1,0 +1,14 @@
+{
+  "name": "regservicelocator",
+  "version": "1.0.0",
+  "description": "service locator for regserve",
+  "main": "index.js",
+  "scripts": {
+    "test": "regservicelocator.js"
+  },
+  "author": "Venkatesh Jagannathan",
+  "license": "MIT",
+  "dependencies": {
+    "yamljs": "^0.2.10"
+  }
+}
