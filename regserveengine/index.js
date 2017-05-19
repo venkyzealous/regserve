@@ -1,76 +1,146 @@
-var http = require("http");
 var express = require("express");
-var regression = require("regression");
 var yamljs = require("yamljs");
-var fs = require("fs");
-
-//var bodyParser = require('body-parser');
-//var multer  = require('multer');
+var request = require('request');
+var events = require("events");
 
 
 
-var app = express();
+(function(express,yamljs,request,events){
+	var eventEmitter = new events.EventEmitter();
 
-
-
-
-
-app.get("/regserve",function(,req,res){
-	res.send("Welcome to Regserve");
-});
-
-/*enable if file processing is needed*/
-//app.use(express.static('public'));
-//app.use(bodyParser.urlencoded({ extended: false }));
-//app.use(multer({ dest: '/tmp/'}));
-
-app.post("/regserve",function(req,res){
-
-	var validationService = regServiceLocator.Locate("regvalidationservice");
-	var processingService = regServiceLocator.Locate("regprocessingservice");
-	
-	//var dataService = regServiceLocator.Locate("DataService");
-	//var rulesService = regServiceLocator.Locate("RulesService");
-	//var configurationService = regServiceLocator.Locator("configurationService");
-
-
-
-	var inputData = req.Data;
-	var result = validationService.Validate(inputData);
-	if(result.isValid)
-	{
-		var message = {};
-		message.isError = 1;
-		message.ErrorMessage = "Input Data Invalid."
-		message.ErrorDetails = result.Details;
-		console.log(message);
-		res.send(JSON.stringify(message));
+	var services = {
+		"regvalidationservice":null,
+		"regprocessingservice":null
 	}
 
-	result = processingService.Process(inputData);
-	res.send(JSON.stringify(message));
+	function ServiceLocator(url)
+	{
+		this.url = url;
+		this.LocateAsync =  function(serviceName, callback){
+			request(this.url+'/service/'+ serviceName + '/url',function(error,response,body){
+				if(error == null){
+					var result = JSON.parse(body);
+					this.services[serviceName] = new Service(result.url);
+					callback(result.url);
+				}
+				else{
+					console.log("Locating "+ serviceName + " Failed");
+					console.error(error);
+				}
+			});
+		}
+	}
 
-});
+	function Service(url)
+	{
+		this.url = url,
+		this.serve = function(path,inputData,callback){
+			request({
+				url: this.url+path,
+				json:true,
+				method: 'POST',
+				multipart: {
+					chunked:false,
+					data:[
+						{
+							'content-type': 'application/json',
+							body:inputData
+						}
+					]
+				}
+			},function(error,response,body){
+				if(error == null){
+					var result = JSON.parse(body);
+					callback(result.url,inputData);
+				}
+				else{
+					console.log("Service "+ serviceName + " Failed");
+					console.error(error);
+				}
+			});
+		}
+
+	}
 
 
+	function initEngine(serviceLocatorURL){ //async initialization of services
+		for(var service in this.services){
+			intService(service)
+		}
+	}
+
+	function initService(serviceName){
+		locator.LocateAsync(serviceName,function(url){
+			this.services[serviceName] = new Service(url);
+			if(engineReady()){
+				startEngine(); // all set, let's go
+			}
+		}
+	}
+	function engineReady{
+		for(var service in this.services){
+			if(this.services[service] == null)
+				return false;
+		}
+		return true;
+	}
+
+	function startEngine(){
 
 
+		//validation and processing chain
+		app.get("/regserve",function(req,res){
+			res.send("Welcome to Regserve");
+		});
 
-var server = app.listen(8081,function(){
-	var host = server.address().address;
-	var port = server.address().port;	
+		app.post("/regserve",function(req,res){
 
-	console.log("listening at http://%s:%s/",host,port);
-})
+			validateData(req.body.Data, function(result){
+				res.send(JSON.stringify(message));
+			});
+
+		});
+
+		var server = app.listen(8081,function(){
+			var host = server.address().address;
+			var port = server.address().port;	
+
+			console.log("listening at http://%s:%s/",host,port);
+		});
+	}
+
+	function validateData(inputData,callback){
+		this.services["regvalidationservice"].serve('/validate',inputData,processData);
+	}
+
+	function processData(result,inputData){
+		if(!result.isValid){
+			var message = {};
+			message.isError = 1;
+			message.ErrorMessage = "Input Data Invalid."
+			message.ErrorDetails = result.details;
+			console.log("Input Data Invalid: %s",result.details);
+			callback(message);
+		}
+		else{
+			this.services["regprocessingservice"].serve('/process',inputData,function(result,inputData){
+			var message = {};
+			message.isError = 0;
+			message.result = result;
+			console.log("Successfully processed");
+			callback(message);
+			});
+		}
+	}
+
+	var app = express();
+	var config_contents = fs.read("config.yaml");
+	var config = yamljs.parse(config_contents);
+	var serviceLocatorURL = config["regservicelocator_url"];
+	 
+	initEngine(serviceLocatorURL);
 
 
+})(express,yamljs,request,events);
 
 
-http.createServer(function(request,response){
-	response.writeHead(200,{'Content-Type':'text/plain'});
-	response.end('Hello World\n');
-}).listen(8081);
-
-
-
-console.log("Server running at http://127.0.0.1:8081/");
