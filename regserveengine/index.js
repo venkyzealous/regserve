@@ -67,7 +67,7 @@ var serviceLocator = require("regservicelocator");
 	}
 
 	function startEngine(){
-
+		var app = express();
 		app.get("/regserve",function(req,res){
 			res.send("Welcome to Regserve");
 		});

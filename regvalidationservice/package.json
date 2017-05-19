@@ -1,0 +1,11 @@
+{
+  "name": "regvalidationservice",
+  "version": "1.0.0",
+  "description": "validation service for regserve",
+  "main": "regvalidationservice.js",
+  "scripts": {
+    "test": "regvalidationservice.js"
+  },
+  "author": "Venkatesh Jagannathan",
+  "license": "MIT"
+}

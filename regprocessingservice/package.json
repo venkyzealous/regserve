@@ -1,0 +1,11 @@
+{
+  "name": "regprocessingservice",
+  "version": "1.0.0",
+  "description": "Processing service for regserve",
+  "main": "regprocessingservice.js",
+  "scripts": {
+    "test": "regprocessingservice.js"
+  },
+  "author": "Venkatesh Jagannathan",
+  "license": "MIT"
+}
