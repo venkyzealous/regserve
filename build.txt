@@ -1,0 +1,3 @@
+gcloud beta functions deploy regServe --stage-bucket regserve --trigger-http
+
+gcloud beta functions deploy startEngine --stage-bucket regserve2 --trigger-topic regserve-request
