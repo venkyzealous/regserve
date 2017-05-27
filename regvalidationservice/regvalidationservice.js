@@ -1,25 +1,62 @@
-var express = require("express");
+const PubSub = require('@google-cloud/pubsub');
+var datastore = require('@google-cloud/datastore')();
 
-(function(){
-	var app = express();
+const projectId = 'regserve-168212';
 
-	function handleValidationRequest(request,response){
-		var inputData = request.body.data;
-		var result = validate(inputData);
-		response.end(result);
-	}
+const pubsubClient = PubSub({
+  projectId: projectId
+});
+const topicName = 'regserve-process';
 
-	app.post('/validate',handleValidationRequest);
+//called by regserve-validate topic
+module.exports.validate = function(validatorRequestEvent,validatorResponseCallback){
 
-	function validate(inputData){
-		//todo:validate
-		return { isValid:true };
-	}
+	//get the request id from message
+	var subscriptionmsgstr = Buffer.from(validatorRequestEvent.data.data, 'base64').toString();
+	var subscriptionmessage = JSON.parse(subscriptionmsgstr);
+	var id = subscriptionmessage.message.id;
 
-	var server = app.listen(8082,function(){
-		var host = server.address().address;
-		var port = server.address().port;	
-		console.log("listening at http://%s:%s/",host,port);
-	});
+	console.log("venky id: -");
+	console.log(id);
+	//fetch the data from datastore to validate
 
-})(express);
+	var query = datastore.createQuery('request')
+	.filter('id','=',id);
+
+
+	datastore.runQuery(query)
+		.then((results) => {
+			const request = results[0];
+			var data = request[0].data;
+			if(isFormatOkay(data)){
+				request[0].status = 'valid';
+				datastore.update(request[0]).then(()=>{
+					console.log("venky entity updated successfully");
+				});
+			}
+
+			//Valid Data: publish topic for processing
+			var topic = pubsubClient.topic(topicName);
+			topic.publish({
+				message:{
+					id:id,
+					data: "data ready for processing"
+				}
+			},function(err){
+				console.log(JSON.stringify(err));
+			});
+
+			//Invalid Data: update the message status and done
+
+		});
+
+
+
+		validatorResponseCallback();
+
+}
+
+
+function isFormatOkay(data){
+	return true;
+}

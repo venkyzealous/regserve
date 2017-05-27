@@ -7,5 +7,9 @@
     "test": "regvalidationservice.js"
   },
   "author": "Venkatesh Jagannathan",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "@google-cloud/pubsub": "^0.12.0",
+    "@google-cloud/datastore": "^1.0.2"
+  }
 }
