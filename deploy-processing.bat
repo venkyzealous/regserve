@@ -1,4 +1,4 @@
-cd ./regserveprocessingengine
+cd ./regprocessingservice
 
 for /F "tokens=*" %%p IN ('gsutil ls gs://regserve4') DO call gsutil rm %%p
 

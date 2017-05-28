@@ -5,7 +5,7 @@
 		[
 			[
 				"re",
-				"results"
+				"regressionjs"
 			],
 			[
 				"res",
@@ -120,40 +120,10 @@
 	"buffers":
 	[
 		{
-			"file": "regvalidationservice/regvalidationservice.js",
-			"settings":
-			{
-				"buffer_size": 1487,
-				"encoding": "UTF-8",
-				"line_ending": "Windows"
-			}
-		},
-		{
 			"file": "regservestatus/regstatusservice.js",
 			"settings":
 			{
-				"buffer_size": 546,
-				"encoding": "UTF-8",
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"contents": "const url = require('url');\nvar myurl = 'http://server.com:8080/status/id/10';\n\n\nvar path = url.path(myurl);\nconsole.log",
-			"file": "/d/projects/regserve/regservestatus/test",
-			"file_size": 125,
-			"file_write_time": 131404269103985720,
-			"settings":
-			{
-				"buffer_size": 120,
-				"encoding": "UTF-8",
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "/d/projects/regserve/test/test.js",
-			"settings":
-			{
-				"buffer_size": 127,
+				"buffer_size": 939,
 				"encoding": "UTF-8",
 				"line_ending": "Windows"
 			}
@@ -162,16 +132,7 @@
 			"file": "regserveengine/index.js",
 			"settings":
 			{
-				"buffer_size": 1051,
-				"encoding": "UTF-8",
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "regprocessingservice/regprocessingservice.js",
-			"settings":
-			{
-				"buffer_size": 1352,
+				"buffer_size": 1046,
 				"encoding": "UTF-8",
 				"line_ending": "Windows"
 			}
@@ -180,9 +141,26 @@
 			"file": "regservemain/index.js",
 			"settings":
 			{
-				"buffer_size": 693,
+				"buffer_size": 696,
 				"encoding": "UTF-8",
 				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "regprocessingservice/regprocessingservice.js",
+			"settings":
+			{
+				"buffer_size": 1468,
+				"encoding": "UTF-8",
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "regservemain/package.json",
+			"settings":
+			{
+				"buffer_size": 703,
+				"line_ending": "Unix"
 			}
 		}
 	],
@@ -273,16 +251,30 @@
 	[
 		"/D/projects/regserve",
 		"/D/projects/regserve/regprocessingservice",
-		"/D/projects/regserve/regserveengine",
-		"/D/projects/regserve/regservemain",
-		"/D/projects/regserve/regservestatus",
-		"/D/projects/regserve/regvalidationservice"
+		"/D/projects/regserve/regserveengine"
 	],
 	"file_history":
 	[
 		"/D/projects/regserve/regprocessingservice/package.json",
-		"/D/projects/commands.txt",
+		"/D/projects/regserve/deploy-processing.bat",
+		"/d/projects/regserve/test/package.json",
+		"/d/projects/regserve/test/test.js",
+		"/D/projects/regserve/deploy-main.bat",
+		"/D/projects/regserve/deploy-validate.bat",
+		"/D/projects/regserve/deploy-all.bat",
+		"/D/projects/regserve/deploy-engine.bat",
+		"/D/projects/regserve/deploy-status.bat",
+		"/D/projects/regserve/regvalidationservice/regvalidationservice.js",
+		"/d/projects/regserve/test.bat",
 		"/D/projects/regserve/build.txt",
+		"/D/projects/regserve/regvalidationservice/deploy.bat",
+		"/D/projects/regserve/regservemain/deploy.bat",
+		"/D/projects/regserve/regservestatus/deploy.bat",
+		"/D/projects/regserve/regserveengine/deploy.bat",
+		"/D/projects/regserve/regprocessingservice/deploy.bat",
+		"/D/projects/regserve/deploy.bat",
+		"/d/projects/regserve/regservestatus/test",
+		"/D/projects/commands.txt",
 		"/D/projects/regserve/regservestatus/package.json",
 		"/d/projects/regserve/regvalidationservice/package.json",
 		"/D/projects/emulator commands",
@@ -310,7 +302,6 @@
 		"/D/projects/nodejs-getting-started-master/2-structured-data/app.yaml",
 		"/D/projects/nodejs-getting-started-master/2-structured-data/books/model-datastore.js",
 		"/D/projects/nodejs-getting-started-master/2-structured-data/books/model-cloudsql.js",
-		"/D/projects/regserve/regvalidationservice/regvalidationservice.js",
 		"/D/projects/regserve/regprocessingservice/regprocessingservice.js",
 		"/d/projects/gRPCTutorial/grpc-master/examples/node/dynamic_codegen/greeter_client.js",
 		"/d/projects/gRPCTutorial/grpc-master/examples/node/dynamic_codegen/greeter_server.js",
@@ -391,24 +382,118 @@
 	"groups":
 	[
 		{
-			"selected": 3,
+			"selected": 1,
 			"sheets":
 			[
 				{
 					"buffer": 0,
-					"file": "regvalidationservice/regvalidationservice.js",
+					"file": "regservestatus/regstatusservice.js",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 1487,
+						"buffer_size": 939,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								1107,
-								1107
+								364,
+								364
+							]
+						],
+						"settings":
+						{
+							"auto_name": "",
+							"syntax": "Packages/JavaScript/JavaScript.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 9.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 4,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "regserveengine/index.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1046,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								626,
+								626
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 146.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "regservemain/index.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 696,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								442,
+								442
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/JavaScript/JavaScript.sublime-syntax",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				}
+			]
+		},
+		{
+			"selected": 0,
+			"sheets":
+			[
+				{
+					"buffer": 3,
+					"file": "regprocessingservice/regprocessingservice.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1468,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1256,
+								1260
 							]
 						],
 						"settings":
@@ -420,156 +505,7 @@
 						"translation.y": 228.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 4,
-					"type": "text"
-				},
-				{
-					"buffer": 1,
-					"file": "regservestatus/regstatusservice.js",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 546,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								152,
-								152
-							]
-						],
-						"settings":
-						{
-							"auto_name": "",
-							"syntax": "Packages/JavaScript/JavaScript.sublime-syntax"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 2,
-					"type": "text"
-				},
-				{
-					"buffer": 2,
-					"file": "/d/projects/regserve/regservestatus/test",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 120,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								120,
-								120
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/Text/Plain text.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
 					"stack_index": 1,
-					"type": "text"
-				},
-				{
-					"buffer": 3,
-					"file": "/d/projects/regserve/test/test.js",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 127,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								125,
-								125
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/JavaScript/JavaScript.sublime-syntax"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 0,
-					"type": "text"
-				}
-			]
-		},
-		{
-			"selected": 1,
-			"sheets":
-			[
-				{
-					"buffer": 4,
-					"file": "regserveengine/index.js",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 1051,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								516,
-								516
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/JavaScript/JavaScript.sublime-syntax",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 114.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 6,
-					"type": "text"
-				},
-				{
-					"buffer": 5,
-					"file": "regprocessingservice/regprocessingservice.js",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 1352,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								775,
-								775
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/JavaScript/JavaScript.sublime-syntax",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 171.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 3,
 					"type": "text"
 				}
 			]
@@ -579,32 +515,33 @@
 			"sheets":
 			[
 				{
-					"buffer": 6,
-					"file": "regservemain/index.js",
-					"semi_transient": false,
+					"buffer": 4,
+					"file": "regservemain/package.json",
+					"semi_transient": true,
 					"settings":
 					{
-						"buffer_size": 693,
+						"buffer_size": 703,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								265,
-								265
+								0,
+								0
 							]
 						],
 						"settings":
 						{
-							"syntax": "Packages/JavaScript/JavaScript.sublime-syntax",
-							"translate_tabs_to_spaces": false
+							"syntax": "Packages/JavaScript/JSON.sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 285.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 5,
+					"stack_index": 3,
 					"type": "text"
 				}
 			]
@@ -644,7 +581,7 @@
 		"cols":
 		[
 			0.0,
-			0.67851746237,
+			0.538348130291,
 			1.0
 		],
 		"rows":
@@ -687,7 +624,7 @@
 		[
 			[
 				"",
-				"D:\\projects\\gRPCTutorial\\grpc-master\\grpc-master.sublime-workspace"
+				"D:\\projects\\test\\test.sublime-project"
 			]
 		],
 		"width": 380.0

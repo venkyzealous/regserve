@@ -16,7 +16,7 @@ module.exports.validate = function(validatorRequestEvent,validatorResponseCallba
 	var subscriptionmessage = JSON.parse(subscriptionmsgstr);
 	var id = subscriptionmessage.message.id;
 
-	console.log("venky id: -");
+	console.log("id: -");
 	console.log(id);
 	//fetch the data from datastore to validate
 
@@ -27,7 +27,7 @@ module.exports.validate = function(validatorRequestEvent,validatorResponseCallba
 	datastore.runQuery(query)
 		.then((results) => {
 			const request = results[0];
-			var data = request[0].data;
+			var data = JSON.parse(request[0].data);
 			if(isFormatOkay(data)){
 				//Valid Data: publish topic for processing
 				request[0].status = 'valid';
@@ -57,5 +57,26 @@ module.exports.validate = function(validatorRequestEvent,validatorResponseCallba
 
 
 function isFormatOkay(data){
+
+	if(!Array.isArray(data))
+		return false;
+
+	for(var item in data)
+	{
+		if(!Array.isArray(data[item]))
+			return false;
+		else if (data[item].length!= 2)
+			return false;
+		else
+		{
+			for(var point in data[item])
+			{
+				if(!Number.isInteger(data[item][point]))
+					return false;
+			}
+		}
+
+	}
+
 	return true;
 }

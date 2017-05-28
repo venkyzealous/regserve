@@ -1,5 +1,6 @@
 const PubSub = require('@google-cloud/pubsub');
 var datastore = require('@google-cloud/datastore')();
+const regression = require('regression');
 
 const projectId = 'regserve-168212';
 
@@ -23,7 +24,8 @@ module.exports.process = function(processRequestEvent,processResponseCallback){
 	datastore.runQuery(query)
 		.then((results) => {
 			const request = results[0];
-			var data = request[0].data;
+			console.log(request);
+			var data = JSON.parse(request[0].data);
 			getFittingLine(data);
 
 			//Valid Data: publish topic for processing
@@ -49,8 +51,10 @@ var lineData = {
 }
 
 function getFittingLine(data){
-	lineData.m = 10;
-	lineData.c = 15;
+
+	var result = regression('linear',data);
+	lineData.m = result.equation[0];
+	lineData.c = result.equation[1];
 	lineData.success = true;
 	lineData.details = 'Regression analysis successful';
 	return true;
