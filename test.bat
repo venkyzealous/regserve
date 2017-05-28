@@ -1,0 +1,1 @@
+for /F "tokens=*" %%p IN (list.txt) DO echo gsutil rm %%p

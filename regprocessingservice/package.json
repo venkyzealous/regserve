@@ -7,5 +7,9 @@
     "test": "regprocessingservice.js"
   },
   "author": "Venkatesh Jagannathan",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "@google-cloud/datastore": "^1.0.2",
+    "@google-cloud/pubsub": "^0.12.0"
+  }
 }

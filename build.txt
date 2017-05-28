@@ -1,3 +1,18 @@
+
+
+gsutil mb gs://regserve/
+gsutil mb gs://regserve2/
+gsutil mb gs://regserve3/
+gsutil mb gs://regserve4/
+gsutil mb gs://regserve5/
+
+
 gcloud beta functions deploy regServe --stage-bucket regserve --trigger-http
 
 gcloud beta functions deploy startEngine --stage-bucket regserve2 --trigger-topic regserve-request
+
+gcloud beta functions deploy validate --stage-bucket regserve3 --trigger-topic regserve-validate
+
+gcloud beta functions deploy process --stage-bucket regserve4 --trigger-topic regserve-process
+
+gcloud beta functions deploy regServeStatus --stage-bucket regserve5 --trigger-http

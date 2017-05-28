@@ -1,0 +1,4 @@
+gs://regserve/us-central1-regServe-gaumwlydtmnu.zip
+gs://regserve/us-central1-regServe-scrosztisuym.zip
+gs://regserve/us-central1-regServe-gaumwlydtmnu.zip
+gs://regserve/us-central1-regServe-scrosztisuym.zip

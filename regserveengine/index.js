@@ -36,14 +36,14 @@ module.exports.startEngine = function (engineRequestEvent,engineResponseCallback
 		console.log("success insert of data");
 	});
 
-			
+
 	var topic = pubsubClient.topic(topicName);
 	topic.publish({
 		message:{
 			id:id
 		}
 	},function(err){
-		console.log(error);
+		console.log(err);
 	});
 	console.log("published topic regserve-validate successfully");
 

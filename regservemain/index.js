@@ -30,18 +30,7 @@ exports.regServe = function(request,response){
 
 	response.end(JSON.stringify({
 		result:"request queued successfully",
-		statuslink:"/regServeStatus/"+id
+		statuslink:"/regServeStatus/id/"+id
 	}));
-	
-}
 
-exports.regServeStatus = function(request,response){
-	var key = datastore.key(request.queryString.id);
-	datastore.get(key, function(err, entity) {
-		if(err != null){
-	  		response.end(entity);
-		}
-		else
-			response.end(err);
-	});
 }

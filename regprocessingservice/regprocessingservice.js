@@ -1,25 +1,57 @@
-var express = require("express");
+const PubSub = require('@google-cloud/pubsub');
+var datastore = require('@google-cloud/datastore')();
 
-(function(){
-	var app = express();
+const projectId = 'regserve-168212';
 
-	function handleProcessingRequest(request,response){
-		var inputData = request.body.data;
-		var result = process(inputData);
-		response.end(result);
-	}
+const pubsubClient = PubSub({
+  projectId: projectId
+});
 
-	app.post('/process',handleProcessingRequest);
+//called by regserve-validate topic
+module.exports.process = function(processRequestEvent,processResponseCallback){
 
-	function process(inputData){
-		//todo:process
-		return { isValid:true, result: {"m":10,"c":20} };
-	}
+	//get the request id from message
+	var subscriptionmsgstr = Buffer.from(processRequestEvent.data.data, 'base64').toString();
+	var subscriptionmessage = JSON.parse(subscriptionmsgstr);
+	var id = subscriptionmessage.message.id;
 
-	var server = app.listen(8083,function(){
-		var host = server.address().address;
-		var port = server.address().port;	
-		console.log("listening at http://%s:%s/",host,port);
-	});
+	//fetch the data from datastore to process
+	var query = datastore.createQuery('request')
+	.filter('id','=',id);
 
-})(express);
+
+	datastore.runQuery(query)
+		.then((results) => {
+			const request = results[0];
+			var data = request[0].data;
+			getFittingLine(data);
+
+			//Valid Data: publish topic for processing
+			request[0].status = 'processed';
+			request[0].description = lineData.details;
+			if(lineData.success)
+				request[0].result = {m:lineData.m,c:lineData.c};
+			else
+				request[0].result = null;
+
+			datastore.update(request[0]).then(()=>{
+			});
+		});
+
+		processResponseCallback();
+}
+
+var lineData = {
+	m:0,
+	c:0,
+	success:false,
+	details:''
+}
+
+function getFittingLine(data){
+	lineData.m = 10;
+	lineData.c = 15;
+	lineData.success = true;
+	lineData.details = 'Regression analysis successful';
+	return true;
+}

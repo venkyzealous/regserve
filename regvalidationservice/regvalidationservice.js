@@ -29,31 +29,30 @@ module.exports.validate = function(validatorRequestEvent,validatorResponseCallba
 			const request = results[0];
 			var data = request[0].data;
 			if(isFormatOkay(data)){
+				//Valid Data: publish topic for processing
 				request[0].status = 'valid';
 				datastore.update(request[0]).then(()=>{
-					console.log("venky entity updated successfully");
+					var topic = pubsubClient.topic(topicName);
+					topic.publish({
+						message:{
+							id:id
+						}
+					},function(err){
+						console.log(JSON.stringify(err));
+					});
+
 				});
 			}
-
-			//Valid Data: publish topic for processing
-			var topic = pubsubClient.topic(topicName);
-			topic.publish({
-				message:{
-					id:id,
-					data: "data ready for processing"
-				}
-			},function(err){
-				console.log(JSON.stringify(err));
-			});
-
-			//Invalid Data: update the message status and done
+			else{
+				//Invalid Data: update the message status and done
+				request[0].status = 'invalid'
+				request[0].description = 'validation error details'
+				datastore.update(request[0]);
+			}
 
 		});
 
-
-
 		validatorResponseCallback();
-
 }
 
 
